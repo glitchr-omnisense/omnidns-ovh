@@ -1,0 +1,15 @@
+{
+    "name": "omnidns/ovh",
+    "description": "Reserved, not released yet: OVH for glitchr/omnidns, the family for a domain name where it is registered (availability, registration and renewal, DNS records).",
+    "type": "library",
+    "license": "LGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Marco Meyer",
+            "email": "marco.meyer@glitchr.io"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    }
+}
