@@ -7,4 +7,4 @@ OVH for `glitchr/omnidns`, the family for a domain name where it is registered: 
 
 ## Licence
 
-LGPL-3.0-or-later.
+MIT since 2026-10-09; earlier versions remain published under LGPL-3.0-or-later.
