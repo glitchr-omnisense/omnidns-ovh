@@ -1,7 +1,18 @@
 {
     "name": "omnidns/ovh",
-    "description": "Reserved, not released yet: OVH for glitchr/omnidns, the family for a domain name where it is registered (availability, registration and renewal, DNS records).",
     "type": "library",
+    "description": "Omnidns's OVHcloud, under any PHP host: whether a domain is free and its price, registering it (a cart checked out) and renewing it, the account's domains and their terms, their name servers, and the records of their zones - over the official ovh/ovh client.",
+    "keywords": [
+        "dns",
+        "domain",
+        "registrar",
+        "ovh",
+        "ovhcloud",
+        "dns-records",
+        "framework-agnostic",
+        "omnidns"
+    ],
+    "homepage": "https://github.com/glitchr-studio/omnidns-ovh",
     "license": "MIT",
     "authors": [
         {
@@ -10,6 +21,33 @@
         }
     ],
     "require": {
-        "php": ">=8.2"
+        "php": ">=8.2",
+        "guzzlehttp/guzzle": "^7.0",
+        "omniscient/omnidns": "^1.0@dev",
+        "ovh/ovh": "^3.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnidns\\Ovh\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Omnidns\\Ovh\\Tests\\": "Tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-1.x": "1.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
