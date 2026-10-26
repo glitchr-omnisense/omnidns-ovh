@@ -1,6 +1,6 @@
 # omnidns/ovh
 
-OVHcloud for [omniscient/omnidns](https://github.com/glitchr-studio/omnidns), under any PHP host:
+OVHcloud for [omnisense/omnidns](https://github.com/glitchr-omnisense/omnidns), under any PHP host:
 whether a domain is free and its price, registering it and renewing it, the account's domains and
 their terms, their name servers, and the records of their zones.
 

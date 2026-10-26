@@ -8,13 +8,13 @@ use PHPUnit\Framework\TestCase;
 /**
  * omnidns/ovh with no framework: every class of the package loaded in a PHP
  * process of its own, with nothing from outside but what it requires -
- * omniscient/omnidns, the official ovh/ovh client and what it needs (Guzzle, league/oauth2-client, the PSR interfaces): no framework, no other HTTP client, no application, even
+ * omnisense/omnidns, the official ovh/ovh client and what it needs (Guzzle, league/oauth2-client, the PSR interfaces): no framework, no other HTTP client, no application, even
  * in the harness where they are installed beside it.
  */
 final class BareTest extends TestCase
 {
     private const FOREIGN = '~^(?:Symfony\\\\(?!Contracts\\\\HttpClient\\\\|Polyfill\\\\)|(?:Illuminate|Laravel|Doctrine|Twig|Nyholm|Omnibridge|Base|App)\\\\)~';
-    private const ALLOWED_FILES = '~/vendor/(?:omniscient/omnidns|ovh/ovh|guzzlehttp/[a-z-]+|league/oauth2-client|psr/[a-z-]+|ralouphie/getallheaders|symfony/deprecation-contracts|paragonie/random_compat|symfony/http-client-contracts|composer)/|/vendor/autoload\.php$|^/omnidns/(?:core|plugins/ovh)/~';
+    private const ALLOWED_FILES = '~/vendor/(?:omnisense/omnidns|ovh/ovh|guzzlehttp/[a-z-]+|league/oauth2-client|psr/[a-z-]+|ralouphie/getallheaders|symfony/deprecation-contracts|paragonie/random_compat|symfony/http-client-contracts|composer)/|/vendor/autoload\.php$|^/omnidns/(?:core|plugins/ovh)/~';
 
     public function testEveryClassLoadsWithTheRequiredPackagesAlone(): void
     {
