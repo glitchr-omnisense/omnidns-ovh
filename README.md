@@ -15,7 +15,7 @@ $registry->availability('ovh')->check('example.fr');
 ```
 
 Options: `application_key`, `application_secret`, `consumer_key` (required: an application made at
-https://eu.api.ovh.com/createToken/ with GET/POST on `/order/cart*`, GET/PUT/POST on `/domain*`,
+https://eu.api.ovh.com/createToken/ with GET/POST on `/order/cart*`, GET/PUT/POST on `/domain*`, DELETE on `/domain/zone/*`,
 GET/POST on `/service/*`), `endpoint` (`ovh-eu`, `ovh-ca`, `ovh-us`... or a URL), `subsidiary`
 (`FR`), `auto_pay` (false).
 

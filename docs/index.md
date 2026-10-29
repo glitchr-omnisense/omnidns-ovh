@@ -30,12 +30,9 @@ ovh/ovh brings `league/oauth2-client`. The wrapped client is maintained and fram
 
 An API application created at https://eu.api.ovh.com/createToken/ for the account: its
 **application key**, **application secret** and **consumer key**, with the rights the factory
-lists - GET/POST on `/order/cart*`, GET/PUT/POST on `/domain*`, GET/POST on `/service/*`.
-
-> [!WARNING]
-> Known defect: `delete()` (and an `update()` that changes a record's type) calls
-> `DELETE /domain/zone/{zone}/record/{id}`, which those rights do not cover, where the list
-> should hold every right a call needs. Add DELETE on `/domain/zone/*`.
+lists - GET/POST on `/order/cart*`, GET/PUT/POST on `/domain*`, DELETE on `/domain/zone/*` (for
+`delete()` and an `update()` that changes a record's type: `DELETE /domain/zone/{zone}/record/{id}`),
+GET/POST on `/service/*`.
 
 Owners are contacts the account holds: created with `POST /me/contact` (a call this package does
 not make), then named by their id.

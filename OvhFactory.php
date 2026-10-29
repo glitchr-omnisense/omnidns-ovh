@@ -14,7 +14,8 @@ use Ovh\Api;
  *   application_key, application_secret, consumer_key
  *                 the API's credentials (required): an application created at
  *                 https://eu.api.ovh.com/createToken/ with the rights it needs - GET/POST on /order/cart*,
- *                 GET/PUT/POST on /domain*, GET/POST on /service/*
+ *                 GET/PUT/POST on /domain*, DELETE on /domain/zone/* (delete(), an update() that changes
+ *                 a record's type), GET/POST on /service/*
  *   endpoint      ovh-eu (also ovh-ca, ovh-us, kimsufi-eu... or a URL)
  *   subsidiary    the OVHcloud company carts are opened with: FR, DE, GB, CA...
  *   auto_pay      true: an order is paid at once with the account's preferred means of payment; false (the
