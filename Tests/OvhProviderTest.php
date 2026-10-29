@@ -178,6 +178,41 @@ final class OvhProviderTest extends TestCase
         self::assertSame(['availability', 'registrar', 'domains', 'nameservers', 'dns'], $registry->get('ovh')->capabilities()->contracts());
     }
 
+    /**
+     * Nothing of the keys anywhere in what a log of the whole chain writes when OVHcloud is not
+     * reached: the messages, the previous exception (a copy of Guzzle's, its class kept, without
+     * the request it carried, whose headers held the application and consumer keys), the traces'
+     * arguments, which PHP keeps unless zend.exception_ignore_args is on.
+     */
+    public function testNoPartOfAnUnreachableChainHoldsTheKeys(): void
+    {
+        $ignoreArgs = ini_set('zend.exception_ignore_args', '0');
+        $handler = static function (RequestInterface $request) {
+            if (str_ends_with($request->getUri()->getPath(), '/auth/time')) {
+                return Create::promiseFor(new Response(200, ['Content-Type' => 'application/json'], (string) time()));
+            }
+
+            throw new \GuzzleHttp\Exception\ConnectException('cURL error 6: Could not resolve host: eu.api.ovh.com for '.$request->getUri(), $request);
+        };
+        $provider = (new OvhFactory(new Client(['handler' => HandlerStack::create($handler)])))->create(['application_key' => 'application-key-123', 'application_secret' => 'application-secret-456', 'consumer_key' => 'consumer-key-789']);
+        self::assertInstanceOf(OvhProvider::class, $provider);
+
+        try {
+            $provider->records('example.org');
+            self::fail('no exception');
+        } catch (\Omnidns\Exception\UnreachableException $e) {
+            self::assertInstanceOf(\GuzzleHttp\Exception\ConnectException::class, $e->getPrevious());
+            for ($one = $e; null !== $one; $one = $one->getPrevious()) {
+                foreach (['application-key-123', 'application-secret-456', 'consumer-key-789'] as $secret) {
+                    self::assertStringNotContainsString($secret, $one->getMessage());
+                    self::assertStringNotContainsString($secret, print_r($one->getTrace(), true));
+                }
+            }
+        } finally {
+            ini_set('zend.exception_ignore_args', false !== $ignoreArgs ? $ignoreArgs : '1');
+        }
+    }
+
     /** @param array<string, mixed> $routes "METHOD /path?query" => an answer, a fixture's name, or [status, answer] */
     private function provider(array $routes, bool $autoPay = false): OvhProvider
     {

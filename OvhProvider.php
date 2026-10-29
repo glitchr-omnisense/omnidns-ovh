@@ -2,6 +2,7 @@
 
 namespace Omnidns\Ovh;
 
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Omnidns\AvailabilityInterface;
@@ -12,6 +13,7 @@ use Omnidns\Exception\InvalidArgumentException;
 use Omnidns\Exception\ProviderException;
 use Omnidns\Exception\UnreachableException;
 use Omnidns\Http\Json;
+use Omnidns\Http\Redaction;
 use Omnidns\Model\Availability;
 use Omnidns\Model\Contact;
 use Omnidns\Model\DomainInfo;
@@ -249,15 +251,31 @@ final class OvhProvider implements AvailabilityInterface, RegistrarInterface, Do
             };
         } catch (RequestException $e) {
             if (null === $response = $e->getResponse()) {
-                throw new UnreachableException(\sprintf('OVHcloud could not be reached for %s: %s', $what, $e->getMessage()), 0, $e);
+                throw self::unreachable($e, $what);
             }
             $message = Json::string(json_decode((string) $response->getBody(), true), 'message');
 
             throw ProviderException::answered('OVHcloud', $what, $response->getStatusCode().(null === $message ? '' : " ($message)"));
         } catch (GuzzleException $e) {
-            throw new UnreachableException(\sprintf('OVHcloud could not be reached for %s: %s', $what, $e->getMessage()), 0, $e);
+            throw self::unreachable($e, $what);
         } catch (\JsonException $e) {
             throw ProviderException::answered('OVHcloud', $what, 'something that is not JSON');
         }
+    }
+
+    /**
+     * Not reached: Guzzle's message and exception with the request's keys masked (the
+     * application and consumer keys, the signature travel in its headers), the previous a copy
+     * without the request it carried, no trace keeping arguments.
+     */
+    private static function unreachable(GuzzleException $e, string $what): UnreachableException
+    {
+        $request = $e instanceof RequestException || $e instanceof ConnectException ? $e->getRequest() : null;
+        $secrets = null === $request ? [] : Redaction::secrets((string) $request->getUri(), ['headers' => $request->getHeaders()]);
+        foreach (['X-Ovh-Application', 'X-Ovh-Consumer', 'X-Ovh-Signature'] as $header) {
+            array_push($secrets, ...($request?->getHeader($header) ?? []));
+        }
+
+        return Redaction::withoutArguments(new UnreachableException(\sprintf('OVHcloud could not be reached for %s: %s', $what, Redaction::text($e->getMessage(), $secrets)), 0, Redaction::copy($e, $secrets)));
     }
 }
