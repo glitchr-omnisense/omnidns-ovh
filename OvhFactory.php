@@ -47,6 +47,7 @@ final class OvhFactory extends ProviderFactory
             new Api((string) $c->string('application_key'), (string) $c->string('application_secret'), $c->string('endpoint') ?? 'ovh-eu', $c->string('consumer_key'), $this->http),
             $c->string('subsidiary') ?? 'FR',
             $c->bool('auto_pay'),
+            $c->backoff(),
         );
     }
 }

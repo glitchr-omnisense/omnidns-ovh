@@ -135,6 +135,15 @@ Not run live (no account).
 - A duration outside 1 to 10 years, an owner without a handle: `InvalidArgumentException`.
 - No cart id, no service id, a record not found: `ProviderException`.
 
+## Usage policy
+
+`policy.json` (omnisense/contracts' schema, read on 2026-11-10, `OvhProvider::POLICY`): none
+published for this API (the limits OVHcloud documents are the Public Cloud OpenStack APIs'):
+unknown. Rights unknown.
+A key is required. Through omnidns's registry each call is checked against it and counted, a 429
+and its Retry-After hold every next call (`UsageLimitReachedException`); a site may tighten it
+(`policy`), never loosen it. See the core's [usage policies](https://github.com/glitchr-omnisense/omnidns/blob/1.x/docs/policies.md).
+
 ## Verified, and not
 
 `Tests/OvhProviderTest.php`, on recorded answers written from OVHcloud's API schemas (not

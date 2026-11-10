@@ -23,6 +23,7 @@
     "require": {
         "php": ">=8.2",
         "guzzlehttp/guzzle": "^7.0",
+        "omnisense/contracts": "^1.0@dev",
         "omnisense/omnidns": "^1.0@dev",
         "ovh/ovh": "^3.4"
     },
@@ -43,6 +44,9 @@
         }
     },
     "extra": {
+        "omnisense": {
+            "policy": "policy.json"
+        },
         "branch-alias": {
             "dev-1.x": "1.x-dev"
         }

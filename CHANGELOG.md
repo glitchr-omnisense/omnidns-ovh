@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- The usage policy as data: `policy.json` (omnisense/contracts' schema, read on 2026-11-10), named in
+  `composer.json` (`extra.omnisense.policy`); the provider implements `DeclaresUsagePolicyInterface`
+  and gives it to its `Capabilities`. The factory gives the provider its `Backoff`: before each call
+  it waits while the provider asked to, and a 429 the SDK carries is a `UsageLimitReachedException`
+  with its Retry-After, holding the next calls.
+
 ### Fixed
 
 - An `UnreachableException` no longer carries the keys: Guzzle's exception, its previous, carried

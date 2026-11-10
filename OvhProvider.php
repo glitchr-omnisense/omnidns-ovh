@@ -23,7 +23,12 @@ use Omnidns\Model\Order;
 use Omnidns\Model\Record;
 use Omnidns\NameserversInterface;
 use Omnidns\RegistrarInterface;
+use Omnisense\Contracts\Policy\Backoff;
+use Omnisense\Contracts\Policy\DeclaresUsagePolicyInterface;
+use Omnisense\Contracts\Policy\UsageLimitReached;
+use Omnisense\Contracts\Policy\UsagePolicy;
 use Ovh\Api;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * OVHcloud's API through ovh/ovh: a domain's offers read in an order cart,
@@ -31,11 +36,16 @@ use Ovh\Api;
  * the account's domains (/domain), their name servers and their zones'
  * records (/domain/zone), each change of a zone followed by its refresh.
  */
-final class OvhProvider implements AvailabilityInterface, RegistrarInterface, DomainsInterface, NameserversInterface, DnsInterface
+final class OvhProvider implements AvailabilityInterface, RegistrarInterface, DomainsInterface, NameserversInterface, DnsInterface, DeclaresUsagePolicyInterface
 {
+    /** OVHcloud's usage policy, as its terms read on the day it says (provenance.verifiedAt). */
+    public const POLICY = __DIR__.'/policy.json';
+
+    private static ?UsagePolicy $policy = null;
+
     private ?string $cart = null;
 
-    public function __construct(private readonly Api $api, private readonly string $subsidiary = 'FR', private readonly bool $autoPay = false)
+    public function __construct(private readonly Api $api, private readonly string $subsidiary = 'FR', private readonly bool $autoPay = false, private readonly ?Backoff $backoff = null)
     {
     }
 
@@ -49,12 +59,17 @@ final class OvhProvider implements AvailabilityInterface, RegistrarInterface, Do
         return 'OVHcloud';
     }
 
+    public function usagePolicy(): UsagePolicy
+    {
+        return self::$policy ??= UsagePolicy::fromFile(self::POLICY);
+    }
+
     public function capabilities(): Capabilities
     {
         return new Capabilities(true, true, true, true, true, Record::TYPES, [
             'https://www.ovhcloud.com/en/terms-and-conditions/contracts/',
             'https://help.ovhcloud.com/csm/en-api-getting-started-ovhcloud-api?id=kb_article_view&sysparm_article=KB0042784',
-        ]);
+        ], $this->usagePolicy());
     }
 
     public function check(string $domain): Availability
@@ -243,6 +258,11 @@ final class OvhProvider implements AvailabilityInterface, RegistrarInterface, Do
     private function call(string $method, string $path, ?array $content, string $what): mixed
     {
         try {
+            $this->backoff?->clear();
+        } catch (UsageLimitReached $e) {
+            throw Redaction::withoutArguments($e);
+        }
+        try {
             return match ($method) {
                 'GET' => $this->api->get($path, $content),
                 'POST' => $this->api->post($path, $content),
@@ -253,6 +273,7 @@ final class OvhProvider implements AvailabilityInterface, RegistrarInterface, Do
             if (null === $response = $e->getResponse()) {
                 throw self::unreachable($e, $what);
             }
+            $this->observe($response);
             $message = Json::string(json_decode((string) $response->getBody(), true), 'message');
 
             throw ProviderException::answered('OVHcloud', $what, $response->getStatusCode().(null === $message ? '' : " ($message)"));
@@ -260,6 +281,29 @@ final class OvhProvider implements AvailabilityInterface, RegistrarInterface, Do
             throw self::unreachable($e, $what);
         } catch (\JsonException $e) {
             throw ProviderException::answered('OVHcloud', $what, 'something that is not JSON');
+        }
+    }
+
+    /**
+     * The wait the provider asks for, kept by its Backoff (the registry's
+     * limiter): a 429 is a UsageLimitReachedException with its Retry-After,
+     * and the next calls wait too. Nothing without a Backoff (a provider
+     * built by hand), nor for an answer that is not an error: ovh/ovh does
+     * not show those headers.
+     */
+    private function observe(?ResponseInterface $response): void
+    {
+        if (null === $this->backoff || null === $response) {
+            return;
+        }
+        $headers = [];
+        foreach ($response->getHeaders() as $name => $values) {
+            $headers[(string) $name] = array_values($values);
+        }
+        try {
+            $this->backoff->observe($response->getStatusCode(), $headers);
+        } catch (UsageLimitReached $e) {
+            throw Redaction::withoutArguments($e);
         }
     }
 

@@ -45,6 +45,15 @@ names' special conditions included) and its API's
 [rules](https://help.ovhcloud.com/csm/en-api-getting-started-ovhcloud-api?id=kb_article_view&sysparm_article=KB0042784):
 a registration or a renewal is a purchase from OVHcloud, made in the account's name.
 
+## Usage policy
+
+`policy.json` (omnisense/contracts' schema, read on 2026-11-10, `OvhProvider::POLICY`): none
+published for this API (the limits OVHcloud documents are the Public Cloud OpenStack APIs'):
+unknown. Rights unknown.
+A key is required. Through omnidns's registry each call is checked against it and counted, a 429
+and its Retry-After hold every next call (`UsageLimitReachedException`); a site may tighten it
+(`policy`), never loosen it. See the core's [usage policies](https://github.com/glitchr-omnisense/omnidns/blob/1.x/docs/policies.md).
+
 ## Verified, and not
 
 - Verified on recorded answers, written from OVHcloud's API schemas (not captured), in the core's

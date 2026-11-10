@@ -1,0 +1,37 @@
+{
+    "$schema": "https://github.com/glitchr-omnisense/contracts/blob/1.x/resources/usage-policy.schema.json",
+    "provider": "ovh",
+    "rateLimits": null,
+    "rights": {
+        "commercial": "unknown",
+        "openSourceRequired": null,
+        "caching": {
+            "permission": "unknown",
+            "maxTtl": null
+        },
+        "storage": "unknown",
+        "redistribution": "unknown",
+        "attribution": {
+            "required": false,
+            "text": null,
+            "url": null,
+            "where": []
+        },
+        "licence": null
+    },
+    "requirements": {
+        "key": true,
+        "userAgent": {
+            "required": false,
+            "pattern": null
+        }
+    },
+    "provenance": {
+        "terms": "https://www.ovhcloud.com/en/terms-and-conditions/contracts/",
+        "policy": "https://docs.ovhcloud.com/en/guides/manage-and-operate/api/first-steps",
+        "verifiedAt": "2026-11-10",
+        "declaredBy": "maintainer",
+        "contact": null,
+        "notes": "OVHcloud publishes no rate limit for its core API (eu.api.ovh.com: /domain, /order) as of 2026-11-10; the limits it documents (20 requests a second per project, 60 a minute on Keystone) are the Public Cloud OpenStack APIs', not this one: unknown, not declared. A 429 is honoured (Guzzle's exception carries the answer). The application key, secret and consumer key are required. Terms: OVHcloud's general and specific conditions; nothing read on what an API answer may be used for."
+    }
+}
