@@ -4,6 +4,13 @@ OVHcloud for [omnisense/omnidns](https://github.com/glitchr-omnisense/omnidns), 
 whether a domain is free and its price, registering it and renewing it, the account's domains and
 their terms, their name servers, and the records of their zones.
 
+```sh
+composer require omnisense/omnidns omnidns/ovh
+```
+
+It needs an OVHcloud account and an application key, secret and consumer key (`application_key`, `application_secret`, `consumer_key`); a registration or a renewal is paid for. Its tests run on recorded answers and need
+none; omnidns's README has a first call on a recorded client.
+
 ```php
 use Omnidns\Ovh\OvhFactory;
 use Omnidns\Registry;

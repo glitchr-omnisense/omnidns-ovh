@@ -23,8 +23,8 @@
     "require": {
         "php": ">=8.2",
         "guzzlehttp/guzzle": "^7.0",
-        "omnisense/contracts": "^1.0@dev",
-        "omnisense/omnidns": "^1.0@dev",
+        "omnisense/contracts": "^1.0",
+        "omnisense/omnidns": "^1.0",
         "ovh/ovh": "^3.4"
     },
     "require-dev": {
